@@ -114,7 +114,6 @@ class ObjectDetectionBot(Bot):
             s3_file_name = str(s3_file_name)
             image_url = f"https://{s3_bucket}.s3.amazonaws.com/{s3_file_name}"
             image_url = str(image_url)
-            logger.info(f'image_url is: {image_url} variable type: {type(image_url)}')
             logger.info(f's3_file_name is: {s3_file_name} variable type: {type(s3_file_name)}')
             prediction_result = get_prediction_from_yolo5(image_url)
 
