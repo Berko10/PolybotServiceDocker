@@ -68,6 +68,7 @@ services:
       - TELEGRAM_APP_URL=${TELEGRAM_APP_URL}
       - MONGO_URI=${MONGO_URI}
       - BUCKET_NAME=${BUCKET_NAME}
+      - YOLO_PORT=${YOLO_PORT}
     ports:
       - "8082:8443"
     networks:
