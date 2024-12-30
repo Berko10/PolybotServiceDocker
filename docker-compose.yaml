@@ -1,6 +1,6 @@
 services:
   polybot:
-    image: ${secrets.DOCKERHUB_USERNAME}/${POLYBOT_IMG_NAME}:${github.run_number}
+    image: ${POLYBOT_IMG_NAME}
     environment:
       - TELEGRAM_TOKEN=${TELEGRAM_TOKEN}
       - TELEGRAM_APP_URL=${TELEGRAM_APP_URL}
@@ -13,7 +13,7 @@ services:
       - mongo
 
   yolo5:
-    image: ${secrets.DOCKERHUB_USERNAME}/${YOLO5_IMG_NAME}:${github.run_number}
+    image: ${YOLO5_IMG_NAME}
     environment:
       - MONGO_URI=${MONGO_URI}
       - BUCKET_NAME=${BUCKET_NAME}
