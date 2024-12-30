@@ -98,6 +98,7 @@ jobs:
             TELEGRAM_APP_URL=https://albacore-cute-martin.ngrok-free.app
             MONGO_URI=mongodb://mongo1:27017,mongo2:27018,mongo3:27019/?replicaSet=myReplicaSet
             BUCKET_NAME=berko-polybot-docker-bucket
+            YOLO_PORT=8081
             """ > .env
             
             # Take the service down
