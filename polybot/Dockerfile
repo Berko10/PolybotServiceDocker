@@ -1,5 +1,4 @@
 FROM python:3.9-alpine
-
 # Set work directory
 WORKDIR /app
 COPY requirements.txt /app/
