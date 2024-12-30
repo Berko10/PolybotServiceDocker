@@ -50,7 +50,7 @@ services:
         "
 
   yolo5-service:
-    image: berko1/${YOLO5_IMG_NAME}:latest
+    image: ${YOLO5_IMG_NAME}
     container_name: yolo5-service
     environment:
       - MONGO_URI=${MONGO_URI}
@@ -61,7 +61,7 @@ services:
       - mongoCluster
 
   polybot:
-    image: berko1/${POLYBOT_IMG_NAME}:latest
+    image: ${POLYBOT_IMG_NAME}
     container_name: polybot
     environment:
       - TELEGRAM_TOKEN=${TELEGRAM_TOKEN}
