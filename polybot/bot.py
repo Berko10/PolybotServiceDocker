@@ -126,15 +126,22 @@ class ObjectDetectionBot(Bot):
             image_url = f"https://{s3_bucket}.s3.amazonaws.com/{s3_file_name}"
             image_url = str(image_url)
             logger.info(f's3_file_name is: {s3_file_name} variable type: {type(s3_file_name)}')
-            prediction_result = get_prediction_from_yolo5(image_url)
+            try:
+                prediction_result = get_prediction_from_yolo5(image_url)
 
             # TODO send the returned results to the Telegram end-user
-            if not prediction_result or 'labels' not in prediction_result or len(prediction_result['labels']) == 0:
-                error_message = "Sorry, no objects were detected in the image."
-                self.send_text(msg['chat']['id'], error_message)
-                return  # חזרה מבלי לנסות שוב
-                # שלב 5: שליחת התוצאות למשתמש
-            self.send_prediction_result(msg['chat']['id'], prediction_result)
+                if not prediction_result or 'labels' not in prediction_result or len(prediction_result['labels']) == 0:
+                    error_message = "Sorry, no objects were detected in the image."
+                    logger.info(f"No objects detected, sending message: {error_message}")  # לוג
+                    self.send_text(msg['chat']['id'], error_message)
+                    return  # חזרה מבלי לנסות שוב
+                    # שלב 5: שליחת התוצאות למשתמש
+                logger.info(f"Prediction results: {prediction_result}")  # לוג נוסף
+                self.send_prediction_result(msg['chat']['id'], prediction_result)
+            except Exception as e:
+                error_message = f"Error occurred while processing the image: {str(e)}"
+                logger.error(error_message)
+                self.send_text(msg['chat']['id'], error_message)  # שלח למשתמש את הודעת השגיאה
     def send_prediction_result(self, chat_id, prediction_result):
         """
         שולח את תוצאות הזיהוי כטקסט למשתמש ב-Telegram
