@@ -139,7 +139,7 @@ class ObjectDetectionBot(Bot):
                 logger.info(f"Prediction results: {prediction_result}")  # לוג נוסף
                 self.send_prediction_result(msg['chat']['id'], prediction_result)
             except Exception as e:
-                error_message = f"Error occurred while processing the image: {str(e)}"
+                error_message = "Sorry, no objects were detected in the image"
                 logger.error(error_message)
                 self.send_text(msg['chat']['id'], error_message)  # שלח למשתמש את הודעת השגיאה
     def send_prediction_result(self, chat_id, prediction_result):
