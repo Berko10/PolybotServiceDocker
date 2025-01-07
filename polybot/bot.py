@@ -41,18 +41,22 @@ class Bot:
         """
         if not self.is_current_msg_photo(msg):
             raise RuntimeError(f'Message content of type \'photo\' expected')
+        try:
+            file_info = self.telegram_bot_client.get_file(msg['photo'][-1]['file_id'])
+            data = self.telegram_bot_client.download_file(file_info.file_path)
+            folder_name = file_info.file_path.split('/')[0]
 
-        file_info = self.telegram_bot_client.get_file(msg['photo'][-1]['file_id'])
-        data = self.telegram_bot_client.download_file(file_info.file_path)
-        folder_name = file_info.file_path.split('/')[0]
+            if not os.path.exists(folder_name):
+                os.makedirs(folder_name)
 
-        if not os.path.exists(folder_name):
-            os.makedirs(folder_name)
+            with open(file_info.file_path, 'wb') as photo:
+                photo.write(data)
 
-        with open(file_info.file_path, 'wb') as photo:
-            photo.write(data)
+            return file_info.file_path
 
-        return file_info.file_path
+        except Exception as e:
+            logger.error(f"Failed to download image: {e}")
+            raise RuntimeError(f"Failed to download image: {e}")
 
     def send_photo(self, chat_id, img_path):
         if not os.path.exists(img_path):
@@ -76,6 +80,9 @@ def upload_to_s3(file_path, bucket_name, s3_file_name):
     except NoCredentialsError:
         logger.error("Credentials not available")
         return False
+    except Exception as e:
+        logger.error(f"Failed to upload file to S3: {e}")
+        raise RuntimeError(f"Failed to upload file to S3: {e}")
 
 
 # שליחת בקשה ל-YOLOv5
@@ -83,14 +90,18 @@ def get_prediction_from_yolo5(image_url):
     yolo_port=os.environ['YOLO_PORT']
     url = f"http://yolo5-service:{yolo_port}/predict"
     params = {'imgName': image_url}  # שלח את כתובת התמונה ששמורה ב-S3
-    response = requests.post(url, params=params)
 
-    if response.status_code == 200:
-        return response.json()  # יחזיר את התוצאה מ-YOLOv5
-    else:
-        logger.error(f"Error: {response.status_code}")
-        return None
+    try:
+        response = requests.post(url, params=params)
+        if response.status_code == 200:
+            return response.json()  # יחזיר את התוצאה מ-YOLOv5
+        else:
+            logger.error(f"Error: {response.status_code}")
+            raise RuntimeError(f"Error: {response.status_code} - {response.text}")
 
+    except Exception as e:
+        logger.error(f"Failed to get prediction from YOLOv5: {e}")
+        raise RuntimeError(f"Failed to get prediction from YOLOv5: {e}")
 
 
 class ObjectDetectionBot(Bot):
@@ -121,7 +132,7 @@ class ObjectDetectionBot(Bot):
             if prediction_result:
                 self.send_prediction_result(msg['chat']['id'], prediction_result)
             else:
-                self.send_text(msg['chat']['id'], "Sorry, an error occurred while processing your image.")
+                self.send_text(msg['chat']['id'], "Sorry, an error occurred while processing your image" )
 
     def send_prediction_result(self, chat_id, prediction_result):
         """

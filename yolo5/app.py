@@ -36,24 +36,26 @@ def predict():
     prediction_id = str(uuid.uuid4())
     logger.info(f'prediction: {prediction_id}. start processing')
 
-    # Receives a URL parameter representing the image to download from S3
-    img_url = request.args.get('imgName')
-    logger.info(f"Received image name from request: {img_url}")
-
-    img_name = request.args.get('imgName')
-    logger.info(f"Received image name from request: {img_name}")
-
-    # Extract the relative path from the full S3 URL
-    img_name = img_url.split('.com/')[-1]  # This will get "photos/file_6.jpg"
-    original_img_path = f"{img_name.split('/')[-1]}"  # This will get just "file_6.jpg"
-    # TODO download img_name from S3, store the local image path in the original_img_path variable.
-    #  The bucket name is provided as an env var BUCKET_NAME.
     try:
+        # Receives a URL parameter representing the image to download from S3
+        img_url = request.args.get('imgName')
+        logger.info(f"Received image name from request: {img_url}")
+
+        img_name = request.args.get('imgName')
+        logger.info(f"Received image name from request: {img_name}")
+
+        # Extract the relative path from the full S3 URL
+        img_name = img_url.split('.com/')[-1]  # This will get "photos/file_6.jpg"
+        original_img_path = f"{img_name.split('/')[-1]}"  # This will get just "file_6.jpg"
+        # TODO download img_name from S3, store the local image path in the original_img_path variable.
+        #  The bucket name is provided as an env var BUCKET_NAME.
+
         s3_client.download_file(images_bucket, img_name, original_img_path)
         logger.info(f"Image {img_name} downloaded successfully to {original_img_path}")
+
     except Exception as e:
         logger.error(f"Failed to download image from bucket: {e}")
-        return f"Failed to download image: {e}", 500
+        return jsonify({"error": f"Failed to process image: {e}"}), 500
 
     logger.info(f'prediction: {prediction_id}/{original_img_path}. Download img completed')
     logger.info(f"Downloading image {img_name} from bucket {images_bucket} to {original_img_path}")
