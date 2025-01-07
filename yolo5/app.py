@@ -147,8 +147,14 @@ def predict():
 
     else:
         logger.warning(f"Failed to find prediction {prediction_id}/{original_img_path}")
-        return f'prediction: {prediction_id}/{original_img_path}. prediction result not found', 404
-
+        #return f'prediction: {prediction_id}/{original_img_path}. prediction result not found', 404
+        error_message = (
+            f"Error - the model could not find any objects in your image."
+            f"\nPrediction ID: {prediction_id}"
+            f"\nImage: {original_img_path}"
+        )
+        logger.warning(error_message)
+        return error_message, 404
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=8081)
