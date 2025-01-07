@@ -148,7 +148,7 @@ def predict():
     else:
         logger.warning(f"Failed to find prediction {prediction_id}/{original_img_path}")
         #return f'prediction: {prediction_id}/{original_img_path}. prediction result not found', 404
-        #send the right error to the user
+        #send the right error to the bot user
         error_message = (
             f"Error - the model could not find any objects in your image."
             f"\nPrediction ID: {prediction_id}"
