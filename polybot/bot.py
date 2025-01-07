@@ -129,11 +129,12 @@ class ObjectDetectionBot(Bot):
             prediction_result = get_prediction_from_yolo5(image_url)
 
             # TODO send the returned results to the Telegram end-user
-            if prediction_result:
-                self.send_prediction_result(msg['chat']['id'], prediction_result)
-            else:
-                self.send_text(msg['chat']['id'], "Sorry, an error occurred while processing your image" )
-
+            if not prediction_result or 'labels' not in prediction_result or len(prediction_result['labels']) == 0:
+                error_message = "Sorry, no objects were detected in the image."
+                self.send_text(msg['chat']['id'], error_message)
+                return  # חזרה מבלי לנסות שוב
+                # שלב 5: שליחת התוצאות למשתמש
+            self.send_prediction_result(msg['chat']['id'], prediction_result)
     def send_prediction_result(self, chat_id, prediction_result):
         """
         שולח את תוצאות הזיהוי כטקסט למשתמש ב-Telegram
